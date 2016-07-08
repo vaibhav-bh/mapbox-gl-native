@@ -50,7 +50,7 @@ void Painter::renderCircle(CircleBucket& bucket,
     circleShader.u_blur = properties.circleBlur;
     circleShader.u_opacity = properties.circleOpacity;
 
-    bucket.drawCircles(circleShader, store);
+    bucket.drawCircles(circleShader, store, config);
 }
 
 } // namespace mbgl

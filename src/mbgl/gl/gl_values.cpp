@@ -22,6 +22,7 @@ const Program::Type Program::Default;
 const LineWidth::Type LineWidth::Default;
 const ActiveTexture::Type ActiveTexture::Default;
 const BindTexture::Type BindTexture::Default;
+const BindVAO::Type BindVAO::Default;
 
 #ifndef GL_ES_VERSION_2_0
 const PixelZoom::Type PixelZoom::Default;

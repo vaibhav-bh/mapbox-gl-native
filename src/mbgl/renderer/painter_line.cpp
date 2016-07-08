@@ -96,7 +96,7 @@ void Painter::renderLine(LineBucket& bucket,
         linesdfShader.u_image = 0;
         lineAtlas->bind(store, config, 0);
 
-        bucket.drawLineSDF(linesdfShader, store, overdraw);
+        bucket.drawLineSDF(linesdfShader, store, config, overdraw);
 
     } else if (!properties.linePattern.value.from.empty()) {
         optional<SpriteAtlasPosition> imagePosA = spriteAtlas->getPosition(properties.linePattern.value.from, true);
@@ -137,7 +137,7 @@ void Painter::renderLine(LineBucket& bucket,
         linepatternShader.u_image = 0;
         spriteAtlas->bind(true, store, config, 0);
 
-        bucket.drawLinePatterns(linepatternShader, store, overdraw);
+        bucket.drawLinePatterns(linepatternShader, store, config, overdraw);
 
     } else {
         config.program = lineShader.getID();
@@ -155,7 +155,7 @@ void Painter::renderLine(LineBucket& bucket,
         lineShader.u_color = color;
         lineShader.u_opacity = opacity;
 
-        bucket.drawLines(lineShader, store, overdraw);
+        bucket.drawLines(lineShader, store, config, overdraw);
     }
 }
 
