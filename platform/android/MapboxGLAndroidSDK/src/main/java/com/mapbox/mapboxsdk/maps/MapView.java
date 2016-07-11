@@ -977,6 +977,27 @@ public class MapView extends FrameLayout {
         return icon;
     }
 
+    Icon loadIconForMarkerView(MarkerView marker) {
+        Icon icon = marker.getIcon();
+        int iconSize = mIcons.size() + 1;
+        if (icon == null) {
+            icon = IconFactory.getInstance(getContext()).defaultMarkerView();
+            marker.setIcon(icon);
+        }
+        Bitmap bitmap = icon.getBitmap();
+        mAverageIconHeight = mAverageIconHeight + (bitmap.getHeight() - mAverageIconHeight) / iconSize;
+        mAverageIconWidth = mAverageIconHeight + (bitmap.getWidth() - mAverageIconHeight) / iconSize;
+        if (!mIcons.contains(icon)) {
+            mIcons.add(icon);
+        } else {
+            Icon oldIcon = mIcons.get(mIcons.indexOf(icon));
+            if (!oldIcon.getBitmap().sameAs(icon.getBitmap())) {
+                throw new IconBitmapChangedException();
+            }
+        }
+        return icon;
+    }
+
     void loadIcon(Icon icon) {
         if (mDestroyed) {
             return;
@@ -1635,12 +1656,13 @@ public class MapView extends FrameLayout {
             List<Marker> selectedMarkers = mMapboxMap.getSelectedMarkers();
 
             PointF tapPoint = new PointF(e.getX(), e.getY());
-            float toleranceSides = 4 * mScreenDensity;
-            float toleranceTopBottom = 10 * mScreenDensity;
-            RectF tapRect = new RectF(tapPoint.x - mAverageIconWidth / 2 - toleranceSides,
-                    tapPoint.y - mAverageIconHeight / 2 - toleranceTopBottom,
-                    tapPoint.x + mAverageIconWidth / 2 + toleranceSides,
-                    tapPoint.y + mAverageIconHeight / 2 + toleranceTopBottom);
+            float toleranceSides = 20 * mScreenDensity;
+            float toleranceTopBottom = 24 * mScreenDensity;
+
+            RectF tapRect = new RectF(tapPoint.x - toleranceSides,
+                    tapPoint.y + toleranceTopBottom,
+                    tapPoint.x + toleranceSides,
+                    tapPoint.y - toleranceTopBottom);
 
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
             builder.include(fromScreenLocation(new PointF(tapRect.left, tapRect.bottom)));
@@ -1675,9 +1697,10 @@ public class MapView extends FrameLayout {
                     if (annotation instanceof Marker) {
                         if (annotation.getId() == newSelectedMarkerId) {
                             if (selectedMarkers.isEmpty() || !selectedMarkers.contains(annotation)) {
-                                // only handle click if no marker view is available
                                 if (!(annotation instanceof MarkerView)) {
                                     mMapboxMap.selectMarker((Marker) annotation);
+                                } else {
+                                    mMapboxMap.getMarkerViewManager().onClickMarkerView((MarkerView) annotation);
                                 }
                             }
                             break;

@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.mapbox.mapboxsdk.R;
@@ -233,6 +232,17 @@ public class MarkerViewManager {
         return markerViewMap.get(marker);
     }
 
+    @Nullable
+    public MapboxMap.MarkerViewAdapter getViewAdapter(MarkerView markerView) {
+        MapboxMap.MarkerViewAdapter adapter = null;
+        for (MapboxMap.MarkerViewAdapter a : markerViewAdapters) {
+            if (a.getMarkerClass().equals(markerView.getClass())) {
+                adapter = a;
+            }
+        }
+        return adapter;
+    }
+
     /**
      * Remove a MarkerView from a map.
      * <p>
@@ -373,21 +383,6 @@ public class MarkerViewManager {
                                 }
                             }
 
-                            adaptedView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(final View v) {
-                                    boolean clickHandled = false;
-                                    if (onMarkerViewClickListener != null) {
-                                        clickHandled = onMarkerViewClickListener.onMarkerClick(marker, v, adapter);
-                                    }
-
-                                    if (!clickHandled) {
-                                        ensureInfoWindowOffset(marker);
-                                        select(marker, v, adapter);
-                                    }
-                                }
-                            });
-
                             markerViewMap.put(marker, adaptedView);
                             if (convertView == null) {
                                 adaptedView.setVisibility(View.GONE);
@@ -397,6 +392,26 @@ public class MarkerViewManager {
                     }
                 }
             }
+        }
+    }
+
+    public void onClickMarkerView(MarkerView markerView) {
+        boolean clickHandled = false;
+
+        MapboxMap.MarkerViewAdapter adapter = getViewAdapter(markerView);
+        View view = getView(markerView);
+        if (adapter == null || view == null) {
+            // not a valid state
+            return;
+        }
+
+        if (onMarkerViewClickListener != null) {
+            clickHandled = onMarkerViewClickListener.onMarkerClick(markerView, view, adapter);
+        }
+
+        if (!clickHandled) {
+            ensureInfoWindowOffset(markerView);
+            select(markerView, view, adapter);
         }
     }
 
