@@ -15,6 +15,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
@@ -62,6 +63,8 @@ import com.almeros.android.multitouch.gesturedetectors.TwoFingerGestureDetector;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 import com.mapbox.mapboxsdk.R;
 import com.mapbox.mapboxsdk.annotations.Annotation;
+import com.mapbox.mapboxsdk.annotations.Feature;
+import com.mapbox.mapboxsdk.annotations.Shape;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.InfoWindow;
@@ -1119,10 +1122,10 @@ public class MapView extends FrameLayout {
         }
 
         List<Marker> annotations = new ArrayList<>(ids.length);
-        List<Annotation> annotationList = mMapboxMap.getAnnotations();
+        List<Shape> annotationList = mMapboxMap.getAnnotations();
         int count = annotationList.size();
         for (int i = 0; i < count; i++) {
-            Annotation annotation = annotationList.get(i);
+            Shape annotation = annotationList.get(i);
             if (annotation instanceof Marker && idsList.contains(annotation.getId())) {
                 annotations.add((Marker) annotation);
             }
@@ -1145,10 +1148,10 @@ public class MapView extends FrameLayout {
         }
 
         List<MarkerView> annotations = new ArrayList<>(ids.length);
-        List<Annotation> annotationList = mMapboxMap.getAnnotations();
+        List<Shape> annotationList = mMapboxMap.getAnnotations();
         int count = annotationList.size();
         for (int i = 0; i < count; i++) {
-            Annotation annotation = annotationList.get(i);
+            Shape annotation = annotationList.get(i);
             if (annotation instanceof MarkerView) {
                 annotations.add((MarkerView) annotation);
             }
@@ -1270,10 +1273,10 @@ public class MapView extends FrameLayout {
     }
 
     private void adjustTopOffsetPixels() {
-        List<Annotation> annotations = mMapboxMap.getAnnotations();
+        List<Shape> annotations = mMapboxMap.getAnnotations();
         int count = annotations.size();
         for (int i = 0; i < count; i++) {
-            Annotation annotation = annotations.get(i);
+            Shape annotation = annotations.get(i);
             if (annotation instanceof Marker) {
                 Marker marker = (Marker) annotation;
                 marker.setTopOffsetPixels(
@@ -1293,10 +1296,10 @@ public class MapView extends FrameLayout {
         if (mDestroyed) {
             return;
         }
-        List<Annotation> annotations = mMapboxMap.getAnnotations();
+        List<Shape> annotations = mMapboxMap.getAnnotations();
         int count = annotations.size();
         for (int i = 0; i < count; i++) {
-            Annotation annotation = annotations.get(i);
+            Shape annotation = annotations.get(i);
             if (annotation instanceof Marker) {
                 Marker marker = (Marker) annotation;
                 mNativeMapView.removeAnnotation(annotation.getId());
@@ -1352,6 +1355,14 @@ public class MapView extends FrameLayout {
 
         return mNativeMapView.getScale();
     }
+    List<Feature> getVisibleFeatures(PointF pointF, List<String> layerIds) {
+        if (mDestroyed) {
+            return new ArrayList<>();
+        }
+
+        return mNativeMapView.getVisibleFeatures(pointF.x, pointF.y, layerIds);
+    }
+
 
     // This class handles TextureView callbacks
     private class SurfaceTextureListener implements TextureView.SurfaceTextureListener {
@@ -1730,10 +1741,10 @@ public class MapView extends FrameLayout {
             }
 
             if (newSelectedMarkerId >= 0) {
-                List<Annotation> annotations = mMapboxMap.getAnnotations();
+                List<Shape> annotations = mMapboxMap.getAnnotations();
                 int count = annotations.size();
                 for (int i = 0; i < count; i++) {
-                    Annotation annotation = annotations.get(i);
+                    Shape annotation = annotations.get(i);
                     if (annotation instanceof Marker) {
                         if (annotation.getId() == newSelectedMarkerId) {
                             if (selectedMarkers.isEmpty() || !selectedMarkers.contains(annotation)) {

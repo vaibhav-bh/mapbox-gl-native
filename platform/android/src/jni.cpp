@@ -109,6 +109,10 @@ jni::jfieldID* customLayerInitializeFunctionId = nullptr;
 jni::jfieldID* customLayerRenderFunctionId = nullptr;
 jni::jfieldID* customLayerDeinitializeFunctionId = nullptr;
 
+//jni::jclass* mapClass = nullptr;
+//jni::jmethodID* mapConstructorId = nullptr;
+//jni::jmethodID* putFunctionId = nullptr;
+
 // Offline declarations start
 
 jni::jfieldID* offlineManagerClassPtrId = nullptr;
@@ -159,6 +163,31 @@ jni::jmethodID* offlineRegionStatusOnErrorId = nullptr;
 
 jni::jmethodID* offlineRegionDeleteOnDeleteId = nullptr;
 jni::jmethodID* offlineRegionDeleteOnErrorId = nullptr;
+
+jni::jclass* polygonFeatureClass = nullptr;
+jni::jmethodID* polygonFeatureConstructorId = nullptr;
+
+jni::jclass* multiPolygonFeatureClass = nullptr;
+jni::jmethodID* multiPolygonFeatureConstructorId = nullptr;
+
+jni::jclass* polylineFeatureClass = nullptr;
+jni::jmethodID* polylineFeatureConstructorId = nullptr;
+
+//jni::jclass* multiPolylineFeatureClass = nullptr;
+//jni::jmethodID* multiPolylineFeatureConstructorId = nullptr;
+
+jni::jclass* pointFeatureClass = nullptr;
+jni::jmethodID* pointFeatureConstructorId = nullptr;
+
+//jni::jclass* multiPointFeatureClass = nullptr;
+//jni::jmethodID* multiPointFeatureConstructorId = nullptr;
+
+//jni::jclass* shapeCollectionFeatureClass = nullptr;
+//jni::jmethodID* shapeCollectionFeatureConstructorId = nullptr;
+
+jni::jclass* featureWrapperClass = nullptr;
+jni::jmethodID* featureWrapperConstructorId = nullptr;
+jni::jmethodID* featureWrapperAddId = nullptr;
 
 // Offline declarations end
 
@@ -1164,6 +1193,62 @@ void nativeRemoveSource(JNIEnv *env, jni::jobject* obj, jlong nativeMapViewPtr, 
     }
 }
 
+jni::jobject*  nativeGetVisibleFeatures(JNIEnv *env, jni::jobject* obj, jlong nativeMapViewPtr, jfloat x, jfloat y, jobjectArray stringArray){
+    mbgl::Log::Debug(mbgl::Event::JNI, "nativeGetVisibleFeatures");
+    assert(nativeMapViewPtr != 0);
+    NativeMapView *nativeMapView = reinterpret_cast<NativeMapView *>(nativeMapViewPtr);
+    mbgl::optional<std::vector<std::string>> optionalLayerIDs;
+
+    // call core for features at point
+    std::vector<mbgl::Feature> features = nativeMapView->getMap().queryRenderedFeatures(mbgl::ScreenCoordinate(x, y), optionalLayerIDs);
+    mbgl::Log::Debug(mbgl::Event::JNI, "Amount of features found: "+std::to_string(features.size()));
+
+    // create wrapping java object to put features in
+    jni::jobject* joutput = &jni::NewObject(*env, *featureWrapperClass, *featureWrapperConstructorId);
+
+    mbgl::ToFeatureType toFeatureType;
+    for (const auto &feature : features) {
+        const mbgl::FeatureType featureType = apply_visitor(toFeatureType, feature.geometry);
+        if(featureType == mbgl::FeatureType::Point) {
+           mbgl::Log::Debug(mbgl::Event::JNI, "It's a point");
+
+           // create point
+           jni::jobject* point = &jni::NewObject(*env, *pointFeatureClass, *pointFeatureConstructorId);
+
+           // add point to wrapper
+           jni::CallMethod<void>(*env, joutput, *featureWrapperAddId, point);
+
+        }else if(featureType == mbgl::FeatureType::LineString) {
+           mbgl::Log::Debug(mbgl::Event::JNI, "It's a polyline");
+
+           // create polyline
+           jni::jobject* polyline = &jni::NewObject(*env, *polylineFeatureClass, *polylineFeatureConstructorId);
+
+           // add polyline to wrapper
+           jni::CallMethod<void>(*env, joutput, *featureWrapperAddId, polyline);
+
+        }else if(featureType == mbgl::FeatureType::Polygon) {
+           mbgl::Log::Debug(mbgl::Event::JNI, "It's a polygon");
+
+           // create polyline
+           jni::jobject* polygon = &jni::NewObject(*env, *polygonFeatureClass, *polygonFeatureConstructorId);
+
+           // add polygon to wrapper
+           jni::CallMethod<void>(*env, joutput, *featureWrapperAddId,polygon);
+
+        }else{
+           mbgl::Log::Debug(mbgl::Event::JNI, "Unsupported feature type found!");
+        }
+
+       // for (auto &pair : feature.properties) {
+       //    auto &value = pair.second;
+       //    mbgl::geometry::feature::PropertyValueEvaluator evaluator(*env);
+       //    mbgl::Value::visit(value, evaluator);
+       // }
+    }
+    return joutput;
+}
+
 // Offline calls begin
 
 jlong createDefaultFileSource(JNIEnv *env, jni::jobject* obj, jni::jstring* cachePath_, jni::jstring* assetRoot_, jlong maximumCacheSize) {
@@ -1701,6 +1786,40 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     customLayerRenderFunctionId = &jni::GetFieldID(env, *customLayerClass, "mRenderFunction", "J");
     customLayerDeinitializeFunctionId = &jni::GetFieldID(env, *customLayerClass, "mDeinitializeFunction", "J");
 
+    //mapClass = &jni::FindClass(env, "com/mapbox/mapboxsdk/layers/CustomLayer");
+    //mapClass = jni::NewGlobalRef(env, mapClass).release();
+    //mapConstructorId = &jni::GetMethodID(env, *mapClass, "<init>", "()V");
+    //putFunctionId = &jni::GetMethodID(env, *mapClass, "put","(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+
+    polygonFeatureClass = &jni::FindClass(env, "com/mapbox/mapboxsdk/annotations/PolygonFeature");
+    polygonFeatureClass = jni::NewGlobalRef(env, polygonFeatureClass).release();
+    polygonFeatureConstructorId = &jni::GetMethodID(env, *polygonFeatureClass, "<init>", "()V");
+
+    multiPolygonFeatureClass = &jni::FindClass(env, "com/mapbox/mapboxsdk/annotations/MultiPolygonFeature");
+    multiPolygonFeatureClass = jni::NewGlobalRef(env, multiPolygonFeatureClass).release();
+    multiPolygonFeatureConstructorId = &jni::GetMethodID(env, *multiPolygonFeatureClass, "<init>", "()V");
+
+    polylineFeatureClass = &jni::FindClass(env, "com/mapbox/mapboxsdk/annotations/PolylineFeature");
+    polylineFeatureClass = jni::NewGlobalRef(env, polylineFeatureClass).release();
+    polylineFeatureConstructorId = &jni::GetMethodID(env, *polylineFeatureClass, "<init>", "()V");
+
+    //multiPolylineFeatureClass = &jni::FindClass(env, "com/mapbox/mapboxsdk/annotations/MultiPolylineFeature");
+    //multiPolylineFeatureClass = jni::NewGlobalRef(env, multiPolylineFeatureClass).release();
+    //multiPolylineFeatureConstructorId = &jni::GetMethodID(env, *multiPolylineFeatureClass, "<init>", "()V");
+
+    pointFeatureClass = &jni::FindClass(env, "com/mapbox/mapboxsdk/annotations/PointFeature");
+    pointFeatureClass = jni::NewGlobalRef(env, pointFeatureClass).release();
+    pointFeatureConstructorId = &jni::GetMethodID(env, *pointFeatureClass, "<init>", "()V");
+
+    //multiPointFeatureClass = &jni::FindClass(env, "com/mapbox/mapboxsdk/annotations/MultiPointFeature");
+    //multiPointFeatureClass = jni::NewGlobalRef(env, multiPointFeatureClass).release();
+    //multiPointFeatureConstructorId = &jni::GetMethodID(env, *multiPointFeatureClass, "<init>", "()V");
+
+    featureWrapperClass = &jni::FindClass(env, "com/mapbox/mapboxsdk/annotations/FeatureWrapper");
+    featureWrapperClass = jni::NewGlobalRef(env, featureWrapperClass).release();
+    featureWrapperConstructorId = &jni::GetMethodID(env, *featureWrapperClass, "<init>", "()V");;
+    featureWrapperAddId = &jni::GetMethodID(env, *featureWrapperClass,"add", "(Lcom/mapbox/mapboxsdk/annotations/Feature;)V");
+
     jni::jclass& nativeMapViewClass = jni::FindClass(env, "com/mapbox/mapboxsdk/maps/NativeMapView");
 
     onInvalidateId = &jni::GetMethodID(env, nativeMapViewClass, "onInvalidate", "()V");
@@ -1786,7 +1905,8 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
         MAKE_NATIVE_METHOD(nativeRemoveLayer, "(JLjava/lang/String;)V"),
         MAKE_NATIVE_METHOD(nativeAddSource, "(JLjava/lang/String;Lcom/mapbox/mapboxsdk/style/sources/Source;)V"),
         MAKE_NATIVE_METHOD(nativeRemoveSource, "(JLjava/lang/String;)V"),
-        MAKE_NATIVE_METHOD(nativeSetContentPadding, "(JDDDD)V")
+        MAKE_NATIVE_METHOD(nativeSetContentPadding, "(JDDDD)V"),
+        MAKE_NATIVE_METHOD(nativeGetVisibleFeatures,"(JFF[Ljava/lang/String;)Lcom/mapbox/mapboxsdk/annotations/FeatureWrapper;")
     );
 
     // Offline begin

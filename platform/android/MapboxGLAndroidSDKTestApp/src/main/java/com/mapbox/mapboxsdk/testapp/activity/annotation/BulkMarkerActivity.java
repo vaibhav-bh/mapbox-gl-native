@@ -3,6 +3,7 @@ package com.mapbox.mapboxsdk.testapp.activity.annotation;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.ProgressDialog;
+import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -67,7 +68,7 @@ public class BulkMarkerActivity extends AppCompatActivity implements AdapterView
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(new OnMapReadyCallback() {
             @Override
-            public void onMapReady(@NonNull MapboxMap mapboxMap) {
+            public void onMapReady(@NonNull final MapboxMap mapboxMap) {
                 mMapboxMap = mapboxMap;
 
                 if (actionBar != null) {
@@ -77,6 +78,14 @@ public class BulkMarkerActivity extends AppCompatActivity implements AdapterView
                     spinner.setAdapter(spinnerAdapter);
                     spinner.setOnItemSelectedListener(BulkMarkerActivity.this);
                 }
+
+                mMapboxMap.setOnMapLongClickListener(new MapboxMap.OnMapLongClickListener() {
+                    @Override
+                    public void onMapLongClick(@NonNull LatLng point) {
+                        PointF pointF = mapboxMap.getProjection().toScreenLocation(point);
+                        mMapboxMap.getVisibleFeatures(pointF);
+                    }
+                });
             }
         });
 

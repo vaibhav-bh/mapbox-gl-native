@@ -13,7 +13,6 @@ import java.util.List;
  */
 public final class PolylineOptions implements Parcelable {
 
-
     public static final Parcelable.Creator<PolylineOptions> CREATOR
             = new Parcelable.Creator<PolylineOptions>() {
         public PolylineOptions createFromParcel(Parcel in) {

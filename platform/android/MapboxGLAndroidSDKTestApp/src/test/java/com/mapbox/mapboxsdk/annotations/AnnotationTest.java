@@ -19,8 +19,8 @@ public class AnnotationTest {
 
     @InjectMocks
     private MapboxMap mapboxMap = mock(MapboxMap.class);
-    private Annotation annotation;
-    private Annotation compare = new Annotation() {
+    private Shape annotation;
+    private Shape compare = new Shape() {
         @Override
         public long getId() {
             return 1;
@@ -29,7 +29,7 @@ public class AnnotationTest {
 
     @Before
     public void beforeTest() {
-        annotation = new Annotation() {
+        annotation = new Shape() {
             // empty child
         };
     }
@@ -74,7 +74,7 @@ public class AnnotationTest {
 
     @Test
     public void testEquals() {
-        Annotation holder = null;
+        Shape holder = null;
         assertFalse(annotation.equals(holder));
         holder = annotation;
         assertTrue(annotation.equals(holder));

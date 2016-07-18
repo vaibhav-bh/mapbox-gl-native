@@ -14,7 +14,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
  * An {@link InfoWindow} can be shown when a Marker is pressed
  * </p>
  */
-public class Marker extends Annotation {
+public class Marker extends Shape {
 
     private LatLng position;
     private String snippet;

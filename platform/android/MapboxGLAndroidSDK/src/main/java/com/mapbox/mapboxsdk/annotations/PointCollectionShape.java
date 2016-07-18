@@ -5,12 +5,12 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MultiPoint extends Shape {
+public abstract class PointCollectionShape extends Shape {
 
     private List<LatLng> points;
     private float alpha = 1.0f;
 
-    protected MultiPoint() {
+    protected PointCollectionShape() {
         super();
         points = new ArrayList<>();
     }

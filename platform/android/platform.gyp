@@ -32,6 +32,8 @@
         'src/log_android.cpp',
         'src/http_file_source.cpp',
         'src/asset_file_source.cpp',
+        'src/feature/value.cpp',
+        'src/feature/feature.cpp',
         'src/thread.cpp',
         'src/style/value.cpp',
         'src/style/sources/sources.cpp',

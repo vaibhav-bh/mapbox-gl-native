@@ -7,12 +7,16 @@ import android.graphics.RectF;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.Surface;
 
+import com.mapbox.mapboxsdk.annotations.Feature;
+import com.mapbox.mapboxsdk.annotations.FeatureWrapper;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.Polygon;
 import com.mapbox.mapboxsdk.annotations.Polyline;
+import com.mapbox.mapboxsdk.constants.MapboxConstants;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.geometry.ProjectedMeters;
@@ -22,6 +26,7 @@ import com.mapbox.mapboxsdk.style.layers.Layer;
 import com.mapbox.mapboxsdk.style.layers.NoSuchLayerException;
 import com.mapbox.mapboxsdk.style.sources.Source;
 
+import java.util.ArrayList;
 import java.util.List;
 
 // Class that wraps the native methods for convenience
@@ -497,6 +502,12 @@ final class NativeMapView {
         nativeRemoveSource(mNativeMapViewPtr, sourceId);
     }
 
+    public List<Feature> getVisibleFeatures(float x, float y, List<String> layerIds) {
+        FeatureWrapper wrapper = nativeGetVisibleFeatures(mNativeMapViewPtr, x, y, layerIds.toArray(new String[layerIds.size()]));
+        Log.v(MapboxConstants.TAG, wrapper.toString());
+        return new ArrayList<>();
+    }
+
     //
     // Callbacks
     //
@@ -682,4 +693,6 @@ final class NativeMapView {
     private native void nativeAddSource(long mNativeMapViewPtr, String id, Source source);
 
     private native void nativeRemoveSource(long mNativeMapViewPtr, String sourceId);
+
+    private native FeatureWrapper nativeGetVisibleFeatures(long mNativeMapViewPtr, float x, float y, String[] layerIds);
 }
