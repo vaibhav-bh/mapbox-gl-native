@@ -39,6 +39,7 @@
 #import "MGLUserLocation_Private.h"
 #import "MGLAnnotationImage_Private.h"
 #import "MGLAnnotationView_Private.h"
+#import "MGLStyle_Private.hpp"
 #import "MGLMapboxEvents.h"
 #import "MGLCompactCalloutView.h"
 #import "MGLAnnotationContainerView.h"
@@ -599,6 +600,14 @@ mbgl::Duration MGLDurationInSeconds(NSTimeInterval duration)
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return image;
+}
+
+- (MGLStyle *)style
+{
+    MGLStyle *style = [[MGLStyle alloc] init];
+    style.mapView = self;
+    style.mbglMap = _mbglMap;
+    return style;
 }
 
 - (void)reachabilityChanged:(NSNotification *)notification
