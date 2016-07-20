@@ -162,6 +162,9 @@ ifabric: $(IOS_PROJ_PATH)
 idocument:
 	OUTPUT=$(OUTPUT) ./platform/ios/scripts/document.sh
 
+style-code-ios:
+	node platform/ios/scripts/generate-style-code.js
+
 #### Android targets #####################################################
 
 ANDROID_ENV = platform/android/scripts/toolchain.sh
