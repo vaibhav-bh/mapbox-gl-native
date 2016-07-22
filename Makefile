@@ -162,8 +162,8 @@ ifabric: $(IOS_PROJ_PATH)
 idocument:
 	OUTPUT=$(OUTPUT) ./platform/ios/scripts/document.sh
 
-style-code-ios:
-	node platform/ios/scripts/generate-style-code.js
+style-code-darwin:
+	node platform/darwin/scripts/generate-style-code.js
 
 #### Android targets #####################################################
 
