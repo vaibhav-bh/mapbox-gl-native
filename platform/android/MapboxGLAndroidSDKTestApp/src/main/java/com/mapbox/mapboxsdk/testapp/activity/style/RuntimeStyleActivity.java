@@ -16,6 +16,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+import com.mapbox.mapboxsdk.style.layers.CircleLayer;
 import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.Function;
 import com.mapbox.mapboxsdk.style.layers.Layer;
@@ -24,6 +25,7 @@ import com.mapbox.mapboxsdk.style.layers.NoSuchLayerException;
 import com.mapbox.mapboxsdk.style.layers.Property;
 import com.mapbox.mapboxsdk.style.layers.PropertyValue;
 import com.mapbox.mapboxsdk.style.layers.RasterLayer;
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.style.sources.RasterSource;
 import com.mapbox.mapboxsdk.style.sources.Source;
@@ -38,6 +40,11 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static com.mapbox.mapboxsdk.style.layers.Filter.*;
 import static com.mapbox.mapboxsdk.style.layers.Function.*;
@@ -149,6 +156,9 @@ public class RuntimeStyleActivity extends AppCompatActivity {
             case R.id.action_add_custom_tiles:
                 addCustomTileSource();
                 return true;
+            case R.id.action_add_clustered_points:
+                addClusteredGeoJsonSource();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -250,6 +260,58 @@ public class RuntimeStyleActivity extends AppCompatActivity {
 
         //Get a good look at it all
         mapboxMap.animateCamera(CameraUpdateFactory.zoomTo(12));
+    }
+
+    private void addClusteredGeoJsonSource() {
+        //Add a clustered source
+        try {
+            mapboxMap.addSource(
+                    new GeoJsonSource("earthquakes", new URL("https://www.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson"))
+                            .withCluster(true)
+                            .withClusterMaxZoom(14)
+                            .withClusterRadius(50)
+            );
+        } catch (MalformedURLException e) {
+            Log.e(TAG, "That's not an url... " + e.getMessage());
+        }
+
+        //Add unclustered layer
+        int[][] layers = new int[][]{
+                new int[]{150, Color.RED},
+                new int[]{20, Color.GREEN},
+                new int[]{0, Color.BLUE}
+        };
+
+        SymbolLayer unclustered = new SymbolLayer("unclustered-points", "earthquakes");
+        unclustered.setProperties(iconImage("marker-15"));
+        mapboxMap.addLayer(unclustered);
+
+        for (int i = 0; i < layers.length; i++) {
+            //Add some nice circles
+            CircleLayer circles = new CircleLayer("cluster-" + i, "earthquakes");
+            circles.setProperties(
+                    circleColor(layers[i][1]),
+                    circleRadius(18f)
+            );
+            circles.setFilter(
+                    i == 0 ?
+                            gte("point_count", layers[i][0]) :
+                            all(gte("point_count", layers[i][0]), lt("point_count", layers[i - 1][0]))
+            );
+            mapboxMap.addLayer(circles);
+        }
+
+        //Add the count labels
+        SymbolLayer count = new SymbolLayer("count", "earthquakes");
+        count.setProperties(
+                textField("{point_count}"),
+                textSize(12f)
+        );
+        mapboxMap.addLayer(count);
+
+
+        //Zoom out to start
+        mapboxMap.animateCamera(CameraUpdateFactory.zoomTo(1));
     }
 
     private void addTerrainLayer() {

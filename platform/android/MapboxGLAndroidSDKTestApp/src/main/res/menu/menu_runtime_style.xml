@@ -42,4 +42,8 @@
         android:id="@+id/action_add_custom_tiles"
         android:title="Custom tiles"
         mapbox:showAsAction="never"/>
+    <item
+        android:id="@+id/action_add_clustered_points"
+        android:title="Clustered GeoJson source"
+        mapbox:showAsAction="never"/>
 </menu>
