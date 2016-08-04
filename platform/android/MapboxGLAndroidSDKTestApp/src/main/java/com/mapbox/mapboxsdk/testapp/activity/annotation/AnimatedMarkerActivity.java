@@ -32,7 +32,7 @@ import java.util.Random;
 public class AnimatedMarkerActivity extends AppCompatActivity {
 
     private MapView mMapView;
-    private MapboxMap mMapboxMap;
+    private MapboxMap mapboxMap;
     private Random random = new Random();
 
     private LatLng dupontCircle = new LatLng(38.90962, -77.04341);
@@ -60,7 +60,7 @@ public class AnimatedMarkerActivity extends AppCompatActivity {
 
             @Override
             public void onMapReady(@NonNull final MapboxMap mapboxMap) {
-                mMapboxMap = mapboxMap;
+                AnimatedMarkerActivity.this.mapboxMap = mapboxMap;
                 setupMap();
                 
                 for (int i = 0; i < 10; i++) {
@@ -79,7 +79,7 @@ public class AnimatedMarkerActivity extends AppCompatActivity {
                 .target(dupontCircle)
                 .zoom(15)
                 .build();
-        mMapboxMap.setCameraPosition(cameraPosition);
+        mapboxMap.setCameraPosition(cameraPosition);
     }
 
     private void addPassenger() {
@@ -88,7 +88,7 @@ public class AnimatedMarkerActivity extends AppCompatActivity {
         if (passengerMarker == null) {
             Icon icon = IconFactory.getInstance(AnimatedMarkerActivity.this)
                     .fromResource(R.drawable.ic_directions_run_black_24dp);
-            passengerMarker = mMapboxMap.addMarker(new MarkerViewOptions()
+            passengerMarker = mapboxMap.addMarker(new MarkerViewOptions()
                     .position(randomLatLng)
                     .icon(icon));
         } else {
@@ -106,7 +106,7 @@ public class AnimatedMarkerActivity extends AppCompatActivity {
         }
 
         // Make sure the car marker is selected so that it's always brought to the front (#5285)
-        mMapboxMap.selectMarker(carMarker);
+        mapboxMap.selectMarker(carMarker);
     }
 
     private void animateMoveToPassenger(final MarkerView car) {
@@ -155,19 +155,19 @@ public class AnimatedMarkerActivity extends AppCompatActivity {
                 .fromResource(carResource);
 
         //View Markers
-        return mMapboxMap.addMarker(new MarkerViewOptions()
+        return mapboxMap.addMarker(new MarkerViewOptions()
                 .position(start)
                 .icon(icon));
 
         //GL Markers
-//        return mMapboxMap.addMarker(new MarkerOptions()
+//        return mapboxMap.addMarker(new MarkerOptions()
 //                .position(start)
 //                .icon(icon));
 
     }
 
     private LatLng getLatLngInBounds() {
-        LatLngBounds bounds = mMapboxMap.getProjection().getVisibleRegion().latLngBounds;
+        LatLngBounds bounds = mapboxMap.getProjection().getVisibleRegion().latLngBounds;
         Random generator = new Random();
         double randomLat = bounds.getLatSouth() + generator.nextDouble() * (bounds.getLatNorth() - bounds.getLatSouth());
         double randomLon = bounds.getLonWest() + generator.nextDouble() * (bounds.getLonEast() - bounds.getLonWest());
