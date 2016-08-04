@@ -21,9 +21,14 @@ const ejsConversionTask = ejs.compile(fs.readFileSync('platform/android/MapboxGL
 for(const subPackage of subPackages) {
   if(!(subPackage.slice(-5) == '.java')) {
     const activities = fs.readdirSync(appBasePath+'/'+subPackage);
+
+    if (!fs.existsSync(testBasePath+"/"+subPackage)){
+        fs.mkdirSync(testBasePath+"/"+subPackage);
+    }
+
     for (const activity of activities) {
       const activityName = activity.slice(0, -5);
-      fs.writeFileSync(testBasePath+activityName+'Test.java', ejsConversionTask([activityName, subPackage]));
+      fs.writeFileSync(testBasePath+"/"+subPackage+"/"+activityName+'Test.java', ejsConversionTask([activityName, subPackage]));
     }
   }
 }
