@@ -2,6 +2,7 @@ package com.mapbox.mapboxsdk.maps;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.PointF;
 import android.location.Location;
 import android.os.SystemClock;
 import android.support.annotation.FloatRange;
@@ -19,6 +20,7 @@ import com.mapbox.mapboxsdk.MapboxAccountManager;
 import com.mapbox.mapboxsdk.annotations.Annotation;
 import com.mapbox.mapboxsdk.annotations.BaseMarkerOptions;
 import com.mapbox.mapboxsdk.annotations.BaseMarkerViewOptions;
+import com.mapbox.mapboxsdk.geojson.Feature;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.InfoWindow;
@@ -1709,6 +1711,20 @@ public class MapboxMap {
     public void snapshot(@NonNull SnapshotReadyCallback callback) {
         mMapView.snapshot(callback, null);
     }
+
+    /**
+     * Queries the map for rendered features
+     *
+     * @param coordinates the point to query
+     * @param layerIds    optionally - only query these layers
+     * @return the list of feature
+     */
+    @UiThread
+    @NonNull
+    public List<Feature> queryRenderedFeatures(@NonNull PointF coordinates, @Nullable String... layerIds) {
+        return mMapView.getNativeMapView().queryRenderedFeatures(coordinates, layerIds);
+    }
+
 
     //
     // Interfaces

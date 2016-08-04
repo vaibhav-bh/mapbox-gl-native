@@ -14,6 +14,9 @@
 #include "style/layers/layers.hpp"
 #include "style/sources/sources.hpp"
 
+#include "conversion/conversion.hpp"
+#include "geometry/conversion/feature.hpp"
+
 #include <mbgl/map/map.hpp>
 #include <mbgl/map/camera.hpp>
 #include <mbgl/annotation/annotation.hpp>
@@ -25,6 +28,10 @@
 #include <mbgl/util/exception.hpp>
 #include <mbgl/util/string.hpp>
 #include <mbgl/util/run_loop.hpp>
+#include <mbgl/util/feature.hpp>
+
+#include <mapbox/geometry/point.hpp>
+#include <mapbox/geometry/box.hpp>
 
 #include <jni/jni.hpp>
 
@@ -925,6 +932,19 @@ void nativeSetVisibleCoordinateBounds(JNIEnv *env, jni::jobject* obj, jlong nati
     nativeMapView->getMap().easeTo(cameraOptions, animationOptions);
 }
 
+jni::jarray<jni::jobject>* nativeQueryRenderedFeatures(JNIEnv *env, jni::jobject* obj, jlong nativeMapViewPtr, jni::jfloat x, jni::jfloat y, jni::jarray<jni::jstring>*  layerIds) {
+    using namespace mbgl::android::conversion;
+
+    mbgl::Log::Debug(mbgl::Event::JNI, "nativeQueryRenderedFeatures");
+    assert(nativeMapViewPtr != 0);
+    NativeMapView *nativeMapView = reinterpret_cast<NativeMapView *>(nativeMapViewPtr);
+
+    //TODO: Convert layerIds
+    
+    mapbox::geometry::point<double> point = {x, y};
+    return *convert<jni::jarray<jni::jobject>*, std::vector<mbgl::Feature>>(*env, nativeMapView->getMap().queryRenderedFeatures(point, {}));
+}
+
 void nativeOnLowMemory(JNIEnv *env, jni::jobject* obj, jlong nativeMapViewPtr) {
     mbgl::Log::Debug(mbgl::Event::JNI, "nativeOnLowMemory");
     assert(nativeMapViewPtr != 0);
@@ -1796,7 +1816,8 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
         MAKE_NATIVE_METHOD(nativeAddSource, "(JLjava/lang/String;Lcom/mapbox/mapboxsdk/style/sources/Source;)V"),
         MAKE_NATIVE_METHOD(nativeRemoveSource, "(JLjava/lang/String;)V"),
         MAKE_NATIVE_METHOD(nativeSetContentPadding, "(JDDDD)V"),
-        MAKE_NATIVE_METHOD(nativeScheduleTakeSnapshot, "(J)V")
+        MAKE_NATIVE_METHOD(nativeScheduleTakeSnapshot, "(J)V"),
+        MAKE_NATIVE_METHOD(nativeQueryRenderedFeatures, "(JFF[Ljava/lang/String;)[Lcom/mapbox/mapboxsdk/geojson/Feature;")
     );
 
     // Offline begin

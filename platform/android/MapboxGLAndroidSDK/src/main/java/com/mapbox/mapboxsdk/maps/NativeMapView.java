@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Surface;
 
+import com.mapbox.mapboxsdk.geojson.Feature;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.Polygon;
@@ -21,6 +22,8 @@ import com.mapbox.mapboxsdk.style.layers.Layer;
 import com.mapbox.mapboxsdk.style.layers.NoSuchLayerException;
 import com.mapbox.mapboxsdk.style.sources.Source;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 // Class that wraps the native methods for convenience
@@ -41,6 +44,8 @@ final class NativeMapView {
 
     // Used for callbacks
     private MapView mMapView;
+
+    private final float pixelRatio;
 
     //
     // Static methods
@@ -63,7 +68,7 @@ final class NativeMapView {
         // the system
         String cachePath = dataPath;
 
-        float pixelRatio = context.getResources().getDisplayMetrics().density;
+        pixelRatio = context.getResources().getDisplayMetrics().density;
         String apkPath = context.getPackageCodePath();
         int availableProcessors = Runtime.getRuntime().availableProcessors();
         ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
@@ -501,6 +506,14 @@ final class NativeMapView {
         nativeRemoveSource(mNativeMapViewPtr, sourceId);
     }
 
+    // Feature querying
+
+    @NonNull
+    public List<Feature> queryRenderedFeatures(PointF coordinates, String... layerIds) {
+        Feature[] features = nativeQueryRenderedFeatures(mNativeMapViewPtr, coordinates.x / pixelRatio, coordinates.y / pixelRatio, layerIds);
+        return features != null ? Arrays.asList(features) : new ArrayList<Feature>();
+    }
+
     public void scheduleTakeSnapshot() {
         nativeScheduleTakeSnapshot(mNativeMapViewPtr);
     }
@@ -696,4 +709,6 @@ final class NativeMapView {
     private native long nativeUpdatePolyline(long nativeMapviewPtr, long polylineId, Polyline polyline);
 
     private native void nativeScheduleTakeSnapshot(long nativeMapViewPtr);
+
+    private native Feature[] nativeQueryRenderedFeatures(long nativeMapViewPtr, float x, float y, String[] layerIds);
 }

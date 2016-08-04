@@ -56,6 +56,7 @@
     <string name="activity_runtime_style">Runtime Style</string>
     <string name="activity_print">Print a map</string>
     <string name="activity_surfaceview_overlay">SurfaceView MediaOverlay</string>
+    <string name="activity_query_rendered_features_click">Query rendered features</string>
     <string name="title_activity_navigation_drawer">Android SDK View integration</string>
 
     <!-- Description -->
@@ -98,6 +99,7 @@
     <string name="description_print">Shows how to print a map</string>
     <string name="description_navigation_drawer">Test animation of Android SDK View components</string>
     <string name="description_surfaceview_mediacontrols">Test overlaying SurfaceView</string>
+    <string name="description_query_rendered_features_point">Query rendered features on click</string>
 
     <string name="menuitem_title_concurrent_infowindow">Concurrent Open InfoWindows</string>
     <string name="menuitem_title_deselect_markers_on_tap">Deselect Markers On Tap</string>
@@ -119,6 +121,7 @@
     <string name="category_userlocation">User Location</string>
     <string name="category_navigation">Navigation</string>
     <string name="category_style">Styling</string>
+    <string name="category_features">Features</string>
 
     <string name="action_visible_bounds_explanation">Center map around 2 markers</string>
     <string name="action_remove_polylines">Remove polylines</string>
