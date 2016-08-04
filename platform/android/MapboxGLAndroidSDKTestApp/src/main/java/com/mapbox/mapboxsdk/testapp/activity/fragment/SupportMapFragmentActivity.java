@@ -20,6 +20,8 @@ import com.mapbox.mapboxsdk.testapp.R;
 
 public class SupportMapFragmentActivity extends AppCompatActivity {
 
+    private MapboxMap mapboxMap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +73,7 @@ public class SupportMapFragmentActivity extends AppCompatActivity {
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(@NonNull MapboxMap mapboxMap) {
+                SupportMapFragmentActivity.this.mapboxMap = mapboxMap;
                 mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().tilt(45.0).build()), 10000);
             }
         });

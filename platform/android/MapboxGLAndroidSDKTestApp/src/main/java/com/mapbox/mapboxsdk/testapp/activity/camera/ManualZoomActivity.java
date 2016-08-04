@@ -37,7 +37,7 @@ public class ManualZoomActivity extends AppCompatActivity {
             actionBar.setDisplayShowHomeEnabled(true);
         }
 
-        mMapView = (MapView) findViewById(R.id.manualZoomMapView);
+        mMapView = (MapView) findViewById(R.id.mapView);
         mMapView.setStyleUrl(Style.SATELLITE);
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(new OnMapReadyCallback() {
