@@ -1817,7 +1817,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
         MAKE_NATIVE_METHOD(nativeRemoveSource, "(JLjava/lang/String;)V"),
         MAKE_NATIVE_METHOD(nativeSetContentPadding, "(JDDDD)V"),
         MAKE_NATIVE_METHOD(nativeScheduleTakeSnapshot, "(J)V"),
-        MAKE_NATIVE_METHOD(nativeQueryRenderedFeatures, "(JFF[Ljava/lang/String;)[Lcom/mapbox/mapboxsdk/geojson/Feature;")
+        MAKE_NATIVE_METHOD(nativeQueryRenderedFeatures, "(JFF[Ljava/lang/String;)[Lcom/mapbox/services/commons/geojson/Feature;")
     );
 
     // Offline begin
