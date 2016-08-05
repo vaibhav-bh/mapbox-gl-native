@@ -418,6 +418,9 @@ test-node: node
 ANDROID_ENV = platform/android/scripts/toolchain.sh
 ANDROID_ABIS = arm-v5 arm-v7 arm-v8 x86 x86-64 mips
 
+generate-test-android:
+	node platform/android/scripts/generate-test-code.js
+
 define ANDROID_RULES
 
 build/android-$1/$(BUILDTYPE): $(BUILD_DEPS)
