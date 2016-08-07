@@ -1399,10 +1399,9 @@ mbgl::Duration MGLDurationInSeconds(NSTimeInterval duration)
 
     if (self.userLocationVisible)
     {
-
         CGPoint tapPointForUserLocation = self.userLocationAnnotationView.hitTestLayer.superlayer ? [singleTap locationInView:self.userLocationAnnotationView] : tapPoint;
 
-        CALayer *hitLayer = self.userLocationVisible ? [self.userLocationAnnotationView.hitTestLayer hitTest:tapPointForUserLocation] : nil;
+        CALayer *hitLayer = [self.userLocationAnnotationView.hitTestLayer hitTest:tapPointForUserLocation];
         if (hitLayer)
         {
             if ( ! _userLocationAnnotationIsSelected)
@@ -1412,7 +1411,6 @@ mbgl::Duration MGLDurationInSeconds(NSTimeInterval duration)
             return;
         }
     }
-
     
     MGLAnnotationTag hitAnnotationTag = [self annotationTagAtPoint:tapPoint persistingResults:YES];
     if (hitAnnotationTag != MGLAnnotationTagNotFound)
