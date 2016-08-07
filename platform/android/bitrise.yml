@@ -85,7 +85,7 @@ workflows:
             export BUILDTYPE=Release
             make android
             make android-test
-    - git::https://github.com/tobrun/steps-start-android-emulator.git@master
+    - git::https://github.com/tobrun/steps-start-android-emulator.git@master:
         inputs:
         - other_options: "-gpu on"
   scheduled:
