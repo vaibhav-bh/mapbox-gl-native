@@ -90,7 +90,7 @@ workflows:
             mkdir ~/.vnc
             x11vnc -storepasswd 1234 ~/.vnc/passwd
             x11vnc -forever -usepw -create &
-
+            sleep 60
             pip install awscli
             aws s3 cp s3://mapbox/android/ci-access-token/developer-config.xml platform/android/MapboxGLAndroidSDKTestApp/src/main/res/values/developer-config.xml
 
