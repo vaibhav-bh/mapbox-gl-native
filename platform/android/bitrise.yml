@@ -89,8 +89,6 @@ workflows:
             aws s3 cp s3://mapbox/android/ci-access-token/developer-config.xml platform/android/MapboxGLAndroidSDKTestApp/src/main/res/values/developer-config.xml
 
             export BUILDTYPE=Release
-            make android
-            make android-test
     - script:
         title: Setting env for gpu emulator
         inputs:
@@ -100,6 +98,7 @@ workflows:
             envman add --key LD_LIBRARY_PATH --value "$ANDROID_HOME/tools/lib64:$LD_LIBRARY_PATH"
             sudo dpkg --add-architecture i386 && sudo apt-get update
             sudo apt-get install -y libsdl1.2debian:i386
+            export DISPLAY=:0.0
     - git::https://github.com/tobrun/steps-start-android-emulator.git@master:
         inputs:
         - other_options: "-gpu on"
