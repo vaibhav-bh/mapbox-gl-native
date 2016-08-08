@@ -89,7 +89,7 @@ workflows:
             sudo apt-get install -y libsdl1.2debian:i386 x11vnc xvfb
             mkdir ~/.vnc
             x11vnc -storepasswd 1234 ~/.vnc/passwd
-            x11vnc -forever -usepw -create
+            x11vnc -forever -usepw -create &
 
             pip install awscli
             aws s3 cp s3://mapbox/android/ci-access-token/developer-config.xml platform/android/MapboxGLAndroidSDKTestApp/src/main/res/values/developer-config.xml
