@@ -99,7 +99,7 @@ workflows:
             set -ex
             envman add --key LD_LIBRARY_PATH --value "$ANDROID_HOME/tools/lib64:$LD_LIBRARY_PATH"
             sudo dpkg --add-architecture i386 && sudo apt-get update
-            sudo apt-get install libsdl1.2debian:i386
+            sudo apt-get install -y libsdl1.2debian:i386
     - git::https://github.com/tobrun/steps-start-android-emulator.git@master:
         inputs:
         - other_options: "-gpu on"
